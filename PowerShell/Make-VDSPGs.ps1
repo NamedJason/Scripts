@@ -1,5 +1,5 @@
 #Create Distributed Port Groups from input file, skipping correctly configured existing port groups
-#Config file: Name, VLAN, PortBinding, DVS
+#Config file: Name, VLAN #, PortBinding type (Ephemeral|Static), DVS
 [cmdletbinding(SupportsShouldProcess=$True)]
 Param
 (
