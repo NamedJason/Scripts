@@ -1,5 +1,6 @@
 param(
-	$MacAddress
+	[Parameter(Mandatory=$true)]
+	[string]$MacAddress
 )
 echo ""
 echo "Searching for VMs with a MAC address of $MacAddress..."
