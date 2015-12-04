@@ -30,7 +30,7 @@ foreach ($thisHBA in $allHBAs)
 	$thisWWN = $thisHBA.WWN
 	
 	#Use this command to verify that the WWN is advertised on that switch
-	$allCommands += "nsshow | grep $thisWWN"
+	$allCommands += "nsshow | grep -i $thisWWN"
 	#Create the Alias
 	$thisAlias = "$thisVMHost`_$thisDevice"
 	$allCommands += "aliCreate ""$thisAlias"", ""$thisWWN"""
