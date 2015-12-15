@@ -1,5 +1,22 @@
-#Create Distributed Port Groups from input file, skipping correctly configured existing port groups
-#Config file: Name, VLAN #, PortBinding type (Ephemeral|Static), DVS
+<#
+	.SYNOPSIS
+	Creates Distributed Port Groups from input file, skipping correctly configured existing port groups.  Optionally, reconfigures existing Port Groups to match the specifications in the file.
+	.EXAMPLE
+	Get-VDSPGs.ps1 -vdSwitch SAC-Production -ConfigFile E:\Temp\DVS.csv -fixErrors
+	
+	This command will read the input file at E:\Temp\DVS.csv for all entries pertaining to the SAC-Production Distribtued vSwitch and will add any new Port Groups and will reconfigure any existing Port Groups that have had configuration drift.
+	.NOTES
+	Input File: Needs these columns: Name, VLAN, PortBinding, DVS
+	Author: Jason Coleman	
+	.LINK
+	http://virtuallyjason.blogspot.com/2015/10/script-to-make-distributed-switch-port.html
+	.PARAMETER configFile
+	This is the input file that describes the Port Groups to be created and which Distribtued vSwitch they should be created on.
+	.PARAMETER fixErrors
+	Be careful with this one.  If a Port Group already exists on the DVS and its settings do not conform to those in the config file, this will reconfigure the EXISTING Port Group as per the config file settings.
+	.PARAMETER vdSwitch
+	This is the name of the DVS that will be configured
+#>
 [cmdletbinding(SupportsShouldProcess=$True)]
 Param
 (
@@ -22,7 +39,7 @@ if ($vdswitch)
 	}
 }
 
-$allPortGroups = import-csv $configFile | where {($_.DVS -match $vdswitch) -or ($_.DVS -match "^$($vdswitch.split('-')[1])")}
+$allPortGroups = import-csv $configFile | where {($_.DVS -match $vdswitch) -or ($_.DVS -match "^$($vdswitch.split('-')[1])")} | sort DVS,VLAN
 
 #Verify that the input file contains all of the necessary columns.
 @("Name","VLAN","PortBinding","DVS") | foreach {
@@ -33,13 +50,42 @@ $allPortGroups = import-csv $configFile | where {($_.DVS -match $vdswitch) -or (
 	}
 }
 
+#Verify that VLAN contains VLAN ID data
+$allPortGroups | foreach {
+	if (!($_.VLAN -match "^\d+$")) {
+		write-host "VLAN invalid or nonnumeric in source file, please fix and run again." -foreground "red"
+		write-host $_
+		exit 10
+	}
+	if (!(@("Ephemeral","Static") -contains $_.PortBinding)) {
+		write-host "Port binding specified invalid, must be ephemeral or static per script rules.  Please fix and run again." -foreground "red"
+		write-host $_
+		exit 10
+	}
+	if (!($_.Name) -or !($_.DVS)) {
+		write-host "Port group or DVS name missing from row.  Please fix and run again." -foreground "red"
+		write-host $_
+		exit 10
+	}
+}
+
 #Read through each defined Port Group from the input file, creating/correcting them as needed.
 foreach ($thisPortGroup in $allPortGroups)
 {
-	$thisSwitch = get-vdswitch "*$($thisPortGroup.DVS)" -erroraction silentlycontinue
+	if($vdswitch) {
+		$thisSwitch = get-vdswitch $vdswitch
+	}
+	else 
+	{
+		$thisSwitch = get-vdswitch "*$($thisPortGroup.DVS)" -erroraction silentlycontinue
+	}
 	if (!($thisSwitch))
 	{
 		write-host "vSwitch $($thisPortGroup.DVS) was not found, skipping port group $($thisPortGroup.name)" -foreground "red"
+	}
+	elseif ($thisSwitch.count -gt 1)
+	{
+		write-host "Found more than one vSwitch for search parameter *$($thisPortGroup.DVS), skipping port group $($thisPortGroup.name)" -foreground "red"
 	}
 	else
 	{
