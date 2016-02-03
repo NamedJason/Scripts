@@ -16,13 +16,13 @@ function make-ParentFolder
 	$parentFolder = get-folder VM
 	foreach ($thisSubFolder in $inFolderArray)
 	{
-		if (!(get-folder $thisSubFolder -erroraction silentlycontinue))
+		if (!($parentFolder | get-folder $thisSubFolder -noRecursion -erroraction silentlycontinue))
 		{
-			$ParentFolder = $parentFolder | new-folder $thisSubFolder -noRecursion
+			$ParentFolder = $parentFolder | new-folder $thisSubFolder
 		}
 		else
 		{
-			$ParentFolder = get-folder $thisSubFolder -noRecursion
+			$ParentFolder = $ParentFolder | get-folder $thisSubFolder -noRecursion
 		}
 	}
 	$ParentFolder
