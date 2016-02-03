@@ -1,15 +1,91 @@
-# Export source Folders/Roles/Permissions/VM Locations
+#Get Data from Source vCenter
 param
 (
-	[alias("d")]
-	$directory = read-host "Enter output directory",
-	[alias("dc")]
-	$datacenter = read-host "Enter datacenter name"
+	$directory = $(read-host "Enter local output directory"),
+	[switch]$getTemplates
 )
+#Takes a VI Folder object and returns an array of strings that represents that folder's absolute path in the inventory
+function get-folderpath
+{
+	param
+	(
+		$thisFolder
+	)
+	#Creates an array of folders back to the root folder
+	if ($thisFolder.id -like "Folder*")
+	{
+		$folderArray = @()
+		$folderArray += $thisFolder
+		while ($folderArray[-1].parent.parent.id -notLike "Datacenter*")
+		{
+			$folderArray += $folderArray[-1].parent
+		}
+		# $folderArray = $folderArray[0..$folderArray.count-2]
+		[array]::Reverse($folderArray)
+		#convert the array of folders to an array of strings with just the folder names
+		$folderStrArray = @()
+		$folderArray | %{$folderStrArray += $_.name}
+		$folderStrArray
+	}
+	else
+	{
+		write-error "Unexpected input provided; does not appear to be a Folder."
+	}
+}
+
 $directory = $directory.trim("\")
 new-item $directory -type directory -erroraction silentlycontinue
-get-virole | where {$_.issystem -eq $false} | export-clixml $directory\roles.xml
-Get-VIPermission | export-clixml $directory\permissions.xml
-$dc = get-datacenter $datacenter
-$dc | get-folder | where {$_.type -eq "VM"} | select name,parent | export-clixml $directory\folders.xml
-$dc | get-vm | select name,folder | export-clixml $directory\vm-locations.xml
+
+#Get Roles
+get-virole | ? {$_.issystem -eq $false} | export-clixml $directory\roles.xml
+
+#Get Permissions
+get-vipermission | export-clixml $directory\permissions.xml
+
+#Get VM Folder Structure
+$outFolders = @()
+foreach ($thisFolder in (get-folder | ? {$_.type.tostring() -eq "VM" -and $_.parent.id -notLike "Datacenter*"}))
+{
+	$myFolder = "" | select path
+	$myFolder.path = get-folderpath $thisFolder
+	$outFolders += $myFolder
+	# $outFolders += get-folderpath $thisFolder
+}
+$outFolders | export-clixml $directory\folders.xml
+
+# #Convert Templates to VMs (so that they can transition vCenters)
+# get-template | select name | export-clixml $directory\Templates.xml
+# if ($getTemplates){get-template | set-template -ToVM -confirm:$false}
+
+#Get VM Locations
+$outVMs = @()
+$allVApps = get-vapp
+$vAppVMs = $allVApps | get-vm
+foreach ($thisVM in (Get-VM | ? {!($vAppVMs.contains($_))}))
+{
+	$myVM = "" | select name,folderPath
+	$myVM.name = $thisVM.name
+	if ($thisVM.folder.name -eq "VM")
+	{
+		$myVM.folderPath = $NULL
+	}
+	else
+	{
+		$myVM.folderPath = get-folderpath $thisVM.folder
+	}
+	$outVMs += $myVM
+}
+$outVMs | export-clixml $directory\VMs.xml
+
+#Deal with vApps... maybe try this to make it more effective?
+# http://www.lukaslundell.com/2013/06/modifying-vapp-properties-with-powershell-and-powercli/
+$outVApps = @()
+foreach ($thisVApp in $allVApps)
+{
+	write-error "Discovered VAPP: $($thisVApp.name) - vAPPs must be recreated manually."
+	$myVApp = "" | select name,VMs
+	$myVApp.name = $thisVApp.name
+	$myVApp.VMs = ($thisVApp | get-vm).name
+	$outVApps += $myVApp
+}
+$outVApps | export-clixml $directory\vApps.xml
