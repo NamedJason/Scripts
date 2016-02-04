@@ -54,6 +54,7 @@ if ($roles)
 }
 
 #Rebuild Permissions
+#Change this so that it uses make-ParentFolder, which means that it needs to store the informaiton better in the get script.
 if ($permissions)
 {
 	$appPermissions = import-clixml $directory\permissions.xml
