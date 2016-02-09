@@ -49,7 +49,6 @@ foreach ($thisFolder in (get-folder | ? {$_.type.tostring() -eq "VM" -and $_.par
 	$myFolder = "" | select path
 	$myFolder.path = get-folderpath $thisFolder
 	$outFolders += $myFolder
-	# $outFolders += get-folderpath $thisFolder
 }
 $outFolders | export-clixml $directory\folders.xml
 
