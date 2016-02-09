@@ -77,7 +77,7 @@ foreach ($thisVM in (Get-VM | ? {!($vAppVMs.contains($_))}))
 }
 $outVMs | export-clixml $directory\VMs.xml
 
-#Deal with vApps... maybe try this to make it more effective?
+#Deal with vApps... maybe try this guy's technique to capture settings and make a best effort at recreating the vApp?
 # http://www.lukaslundell.com/2013/06/modifying-vapp-properties-with-powershell-and-powercli/
 $outVApps = @()
 foreach ($thisVApp in $allVApps)
