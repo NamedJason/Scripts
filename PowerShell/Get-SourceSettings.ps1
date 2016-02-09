@@ -53,9 +53,9 @@ foreach ($thisFolder in (get-folder | ? {$_.type.tostring() -eq "VM" -and $_.par
 }
 $outFolders | export-clixml $directory\folders.xml
 
-# #Convert Templates to VMs (so that they can transition vCenters)
-# get-template | select name | export-clixml $directory\Templates.xml
-# if ($getTemplates){get-template | set-template -ToVM -confirm:$false}
+#Convert Templates to VMs (so that they can transition vCenters)
+get-template | select name | export-clixml $directory\Templates.xml
+if ($getTemplates){get-template | set-template -ToVM -confirm:$false}
 
 #Get VM Locations
 $outVMs = @()
