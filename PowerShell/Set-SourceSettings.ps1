@@ -79,7 +79,7 @@ if ($VMs)
 	}
 	foreach ($thisVApp in $allVApps)
 	{
-		echo ===$thisVApp.name===
+		echo "===$($thisVApp.name)==="
 		$thisvApp.VMs
 	}
 }
