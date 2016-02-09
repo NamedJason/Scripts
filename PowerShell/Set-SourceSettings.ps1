@@ -82,6 +82,7 @@ if ($VMs)
 		echo "===$($thisVApp.name)==="
 		$thisvApp.VMs
 	}
+	#Convert Template VMs back to Templates
 }
 
 if (!($VMs -and $folders -and $permissions -and $roles)
