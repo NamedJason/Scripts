@@ -74,8 +74,11 @@ if ($VMs)
 	$allVApps = import-clixml $directory\vApps.xml
 	foreach ($thisVM in $allVMs)
 	{
-		$ParentFolder = make-ParentFolder $thisVM.folderPath
-		get-vm $thisVM.name | move-vm -folder $ParentFolder
+		if ($foundVM = get-vm $thisVM.name)
+		{
+			$ParentFolder = make-ParentFolder $thisVM.folderPath
+			$foundVM | move-vm -folder $ParentFolder	
+		}
 	}
 	foreach ($thisVApp in $allVApps)
 	{
