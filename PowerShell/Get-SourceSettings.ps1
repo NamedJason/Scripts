@@ -33,7 +33,7 @@ function get-folderpath
 	}
 }
 
-$directory = $directory.trim("\")
+$directory = $directory.trim("\") #" This comment is to fix the gistit syntax highlighting.
 new-item $directory -type directory -erroraction silentlycontinue
 
 #Get Roles
