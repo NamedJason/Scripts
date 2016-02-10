@@ -28,7 +28,7 @@ function make-ParentFolder
 	$ParentFolder
 }
 
-$directory = $directory.trim("\")
+$directory = $directory.trim("\") #" fix the gistit syntax highlighting
 
 #Rebuild Folder Structure
 if ($folders)
