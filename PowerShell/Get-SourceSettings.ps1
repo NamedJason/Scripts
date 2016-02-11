@@ -60,7 +60,15 @@ if ($getTemplates){get-template | set-template -ToVM -confirm:$false}
 $outVMs = @()
 $allVApps = get-vapp
 $vAppVMs = $allVApps | get-vm
-foreach ($thisVM in (Get-VM | ? {!($vAppVMs.contains($_))}))
+if ($vAppVMs)
+{
+	$allVMs = Get-VM | ? {!($vAppVMs.contains($_))}
+}
+else
+{
+	$allVMs = get-VM
+}
+foreach ($thisVM in $allVMs)
 {
 	$myVM = "" | select name,folderPath
 	$myVM.name = $thisVM.name
