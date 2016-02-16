@@ -36,7 +36,7 @@ if ($folders)
 	$folderArray = import-clixml $directory\folders.xml
 	foreach ($thisFolder in $folderArray)
 	{
-		make-ParentFolder $thisFolder
+		make-ParentFolder $thisFolder.path
 	}
 }
 
