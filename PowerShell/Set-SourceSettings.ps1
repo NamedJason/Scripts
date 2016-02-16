@@ -71,7 +71,8 @@ if ($permissions)
 if ($VMs)
 {
 	$allVMs = import-clixml $directory\VMs.xml
-	$allVApps = import-clixml $directory\vApps.xml
+	$allVApps = $NULL
+	if (test-path $directory\vApps.xml){$allVApps = import-clixml $directory\vApps.xml}
 	foreach ($thisVM in $allVMs)
 	{
 		if ($foundVM = get-vm $thisVM.name)
