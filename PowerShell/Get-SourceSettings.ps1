@@ -63,6 +63,18 @@ $vAppVMs = $allVApps | get-vm
 if ($vAppVMs)
 {
 	$allVMs = Get-VM | ? {!($vAppVMs.contains($_))}
+	#Deal with vApps... maybe try this guy's technique to capture settings and make a best effort at recreating the vApp?
+	# http://www.lukaslundell.com/2013/06/modifying-vapp-properties-with-powershell-and-powercli/
+	$outVApps = @()
+	foreach ($thisVApp in $allVApps)
+	{
+		write-error "Discovered VAPP: $($thisVApp.name) - vAPPs must be recreated manually."
+		$myVApp = "" | select name,VMs
+		$myVApp.name = $thisVApp.name
+		$myVApp.VMs = ($thisVApp | get-vm).name
+		$outVApps += $myVApp
+	}
+	$outVApps | export-clixml $directory\vApps.xml
 }
 else
 {
@@ -83,16 +95,3 @@ foreach ($thisVM in $allVMs)
 	$outVMs += $myVM
 }
 $outVMs | export-clixml $directory\VMs.xml
-
-#Deal with vApps... maybe try this guy's technique to capture settings and make a best effort at recreating the vApp?
-# http://www.lukaslundell.com/2013/06/modifying-vapp-properties-with-powershell-and-powercli/
-$outVApps = @()
-foreach ($thisVApp in $allVApps)
-{
-	write-error "Discovered VAPP: $($thisVApp.name) - vAPPs must be recreated manually."
-	$myVApp = "" | select name,VMs
-	$myVApp.name = $thisVApp.name
-	$myVApp.VMs = ($thisVApp | get-vm).name
-	$outVApps += $myVApp
-}
-$outVApps | export-clixml $directory\vApps.xml
