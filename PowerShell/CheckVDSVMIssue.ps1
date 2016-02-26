@@ -65,7 +65,7 @@ Function Test-VDSVMIssue {
 					$Datastore = (($VMachine.ExtensionData.Config.Files.VmPathName).split("]")[0]).Replace("[","")
 					$filename = "$($datastore):\.dvsData\$vSwitchID\$PortKey"
 					if (-not (Get-PSDrive $datastore -ErrorAction SilentlyContinue)) {
-						$NewDrive = New-PSDrive -Name $Datastore -Location (Get-Datastore $Datastore) -PSProvider VimDatastore -Root '\'
+						$NewDrive = New-PSDrive -Name $Datastore -Location (Get-Datastore $Datastore) -PSProvider VimDatastore -Root '\' #' fix gistit syntax highlighting.
 					}
 					$filecheck = Get-ChildItem -Path $filename -ErrorAction SilentlyContinue
 					if ($filecheck) {
