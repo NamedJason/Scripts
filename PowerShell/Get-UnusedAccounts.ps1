@@ -7,7 +7,7 @@ Param
 	$Days = 90,
 	$DCName = "SacDC*",
 	$SearchBase = "ou=MyUsers,dc=Company,dc=Local",
-	$Filter = *
+	$Filter = "*"
 )
 
 $OutUsers = @()
