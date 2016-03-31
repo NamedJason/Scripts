@@ -57,7 +57,7 @@ if ($roles)
 #Change this so that it uses make-ParentFolder, which means that it needs to store the informaiton better in the get script.
 if ($permissions)
 {
-	$appPermissions = import-clixml $directory\permissions.xml
+	$allPermissions = import-clixml $directory\permissions.xml
 	foreach ($thisPermission in $allPermissions)
 	{
 		if ($thisFolder = get-folder $thisPermission.entity.name)
@@ -89,7 +89,7 @@ if ($VMs)
 	#Convert Template VMs back to Templates
 }
 
-if (!($VMs -and $folders -and $permissions -and $roles)
+if (!($VMs -and $folders -and $permissions -and $roles))
 {
 	echo "Please use one or more of the -VMs, -Folders, -Permissions, or -Roles switches to do something"
 }
