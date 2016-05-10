@@ -89,7 +89,7 @@ if ($VMs)
 	#Convert Template VMs back to Templates
 }
 
-if (!($VMs -and $folders -and $permissions -and $roles))
+if (!($VMs -or $folders -or $permissions -or $roles))
 {
 	echo "Please use one or more of the -VMs, -Folders, -Permissions, or -Roles switches to do something"
 }
