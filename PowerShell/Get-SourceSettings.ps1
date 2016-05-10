@@ -33,7 +33,7 @@ function get-folderpath
 	}
 }
 
-$directory = $directory.trim("\")
+$directory = $directory.trim("\") #" This comment is to fix the gistit syntax highlighting.
 new-item $directory -type directory -erroraction silentlycontinue
 
 #Get Roles
@@ -49,19 +49,38 @@ foreach ($thisFolder in (get-folder | ? {$_.type.tostring() -eq "VM" -and $_.par
 	$myFolder = "" | select path
 	$myFolder.path = get-folderpath $thisFolder
 	$outFolders += $myFolder
-	# $outFolders += get-folderpath $thisFolder
 }
 $outFolders | export-clixml $directory\folders.xml
 
-# #Convert Templates to VMs (so that they can transition vCenters)
-# get-template | select name | export-clixml $directory\Templates.xml
-# if ($getTemplates){get-template | set-template -ToVM -confirm:$false}
+#Convert Templates to VMs (so that they can transition vCenters)
+get-template | select name | export-clixml $directory\Templates.xml
+if ($getTemplates){get-template | set-template -ToVM -confirm:$false}
 
 #Get VM Locations
 $outVMs = @()
 $allVApps = get-vapp
 $vAppVMs = $allVApps | get-vm
-foreach ($thisVM in (Get-VM | ? {!($vAppVMs.contains($_))}))
+if ($vAppVMs)
+{
+	$allVMs = Get-VM | ? {!($vAppVMs.contains($_))}
+	#Deal with vApps... maybe try this guy's technique to capture settings and make a best effort at recreating the vApp?
+	# http://www.lukaslundell.com/2013/06/modifying-vapp-properties-with-powershell-and-powercli/
+	$outVApps = @()
+	foreach ($thisVApp in $allVApps)
+	{
+		write-error "Discovered VAPP: $($thisVApp.name) - vAPPs must be recreated manually."
+		$myVApp = "" | select name,VMs
+		$myVApp.name = $thisVApp.name
+		$myVApp.VMs = ($thisVApp | get-vm).name
+		$outVApps += $myVApp
+	}
+	$outVApps | export-clixml $directory\vApps.xml
+}
+else
+{
+	$allVMs = get-VM
+}
+foreach ($thisVM in $allVMs)
 {
 	$myVM = "" | select name,folderPath
 	$myVM.name = $thisVM.name
@@ -76,16 +95,3 @@ foreach ($thisVM in (Get-VM | ? {!($vAppVMs.contains($_))}))
 	$outVMs += $myVM
 }
 $outVMs | export-clixml $directory\VMs.xml
-
-#Deal with vApps... maybe try this to make it more effective?
-# http://www.lukaslundell.com/2013/06/modifying-vapp-properties-with-powershell-and-powercli/
-$outVApps = @()
-foreach ($thisVApp in $allVApps)
-{
-	write-error "Discovered VAPP: $($thisVApp.name) - vAPPs must be recreated manually."
-	$myVApp = "" | select name,VMs
-	$myVApp.name = $thisVApp.name
-	$myVApp.VMs = ($thisVApp | get-vm).name
-	$outVApps += $myVApp
-}
-$outVApps | export-clixml $directory\vApps.xml

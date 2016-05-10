@@ -28,7 +28,7 @@ function make-ParentFolder
 	$ParentFolder
 }
 
-$directory = $directory.trim("\")
+$directory = $directory.trim("\") #" fix the gistit syntax highlighting
 
 #Rebuild Folder Structure
 if ($folders)
@@ -36,7 +36,7 @@ if ($folders)
 	$folderArray = import-clixml $directory\folders.xml
 	foreach ($thisFolder in $folderArray)
 	{
-		make-ParentFolder $thisFolder
+		make-ParentFolder $thisFolder.path
 	}
 }
 
@@ -57,7 +57,7 @@ if ($roles)
 #Change this so that it uses make-ParentFolder, which means that it needs to store the informaiton better in the get script.
 if ($permissions)
 {
-	$appPermissions = import-clixml $directory\permissions.xml
+	$allPermissions = import-clixml $directory\permissions.xml
 	foreach ($thisPermission in $allPermissions)
 	{
 		if ($thisFolder = get-folder $thisPermission.entity.name)
@@ -71,20 +71,25 @@ if ($permissions)
 if ($VMs)
 {
 	$allVMs = import-clixml $directory\VMs.xml
-	$allVApps = import-clixml $directory\vApps.xml
+	$allVApps = $NULL
+	if (test-path $directory\vApps.xml){$allVApps = import-clixml $directory\vApps.xml}
 	foreach ($thisVM in $allVMs)
 	{
-		$ParentFolder = make-ParentFolder $thisVM.folderPath
-		get-vm $thisVM.name | move-vm -folder $ParentFolder
+		if ($foundVM = get-vm $thisVM.name)
+		{
+			$ParentFolder = make-ParentFolder $thisVM.folderPath
+			$foundVM | move-vm -folder $ParentFolder	
+		}
 	}
 	foreach ($thisVApp in $allVApps)
 	{
-		echo ===$thisVApp.name===
+		echo "===$($thisVApp.name)==="
 		$thisvApp.VMs
 	}
+	#Convert Template VMs back to Templates
 }
 
-if (!($VMs -and $folders -and $permissions -and $roles)
+if (!($VMs -and $folders -and $permissions -and $roles))
 {
 	echo "Please use one or more of the -VMs, -Folders, -Permissions, or -Roles switches to do something"
 }
