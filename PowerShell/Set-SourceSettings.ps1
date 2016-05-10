@@ -48,7 +48,7 @@ if ($roles)
 	{
 		if (!(get-virole $thisRole.name -erroraction silentlycontinue))
 		{
-			new-virole -name $thisRole.name -privilege (get-viprivege -id $thisRole.PrivilegeList)
+			new-virole -name $thisRole.name -privilege (get-viprivilege -id $thisRole.PrivilegeList)
 		}
 	}
 }
