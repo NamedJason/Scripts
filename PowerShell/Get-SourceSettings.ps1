@@ -1,4 +1,6 @@
 #Get Data from Source vCenter
+#Built to be used with Set-SourceSettings.ps1 to recreate those same settings in another vCenter.
+#Does not support vApps or multiple datacenters in the same vCenter.
 param
 (
 	$directory = $(read-host "Enter local output directory"),
@@ -35,6 +37,8 @@ function get-folderpath
 
 $directory = $directory.trim("\") #" This comment is to fix the gistit syntax highlighting.
 new-item $directory -type directory -erroraction silentlycontinue
+
+if ((get-datacenter).count -gt 1){write-error "These scripts do not support multiple Datacenters in a single inventory"}
 
 #Get Roles
 get-virole | ? {$_.issystem -eq $false} | export-clixml $directory\$($datacenter)-roles.xml
