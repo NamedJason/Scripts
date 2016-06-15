@@ -1,6 +1,6 @@
 param
 (
-	$directory = $(read-host "Enter local output directory"),
+	$directory = $(read-host "Enter local input directory"),
 	$datacenter = $(read-host "Enter datacenter"),
 	[switch]$roles,
 	[switch]$permissions,
