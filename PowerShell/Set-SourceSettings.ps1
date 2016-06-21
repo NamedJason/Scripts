@@ -114,7 +114,7 @@ if ($VMs)
 		if ($foundVM = get-vm $thisVM.name)
 		{
 			$ParentFolder = make-ParentFolder -inFolderArray $thisVM.folderPath
-			$foundVM | move-vm -folder $ParentFolder	
+			$foundVM | move-vm -destination $ParentFolder	
 		}
 		$i++
 	}
