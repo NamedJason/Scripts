@@ -16,4 +16,5 @@ read-host "Press Enter to power on the discovered VMs..."
 foreach ($thisVM in $targetVMs)
 {
 	if ($thisVM.powerstate -eq "poweredoff"){$thisVM | start-VM}
+	Start-Sleep 15 #avoid a boot storm; adjust this delay based on your environment.
 }
