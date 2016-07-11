@@ -70,7 +70,7 @@ if ($permissions)
 		write-progress -Activity "Creating Permissions" -percentComplete ($i / $allPermissions.count * 100)
 		$target = ""
 		$thisPermission.type
-		switch ($thisPermission.type)
+		switch ($thisPermission.type.tostring())
 		{
 			"Folder" {$target = make-Parentfolder -inFolderArray $thisPermission.entity}
 			"VirtualMachine" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
@@ -78,10 +78,7 @@ if ($permissions)
 				if ($thisPermission.entity -eq "Datacenters") {$target = get-folder Datacenters}
 				else {$target = get-datacenter $thisPermission.entity}}
 			"ClusterComputeResource" {$target = get-cluster $thisPermission.entity}
-			Default {
-			$thisPermission
-			write-error "Unexpected permission target, $($thisPermission.type)"
-			exit 22}
+			Default {write-error "Unexpected permission target, $($thisPermission.type)"}
 		}
 		
 		if ($target)
