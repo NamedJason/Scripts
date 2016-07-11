@@ -15,7 +15,7 @@ $pgHash = @{}
 $allPGs = import-clixml $inputFile
 foreach ($thisPG in $allPGs)
 {
-	$pgHash.add($thisPG.dVSPG, $thisPG.VSSPG)
+	$pgHash.add($thisPG.VSSPG,$thisPG.dVSPG)
 }
 
 #Sets all VMs on the Host to the new VSS Port groups based on the Hashtable
