@@ -117,7 +117,7 @@ if ($VMs)
 		write-progress -Activity "Placing VMs" -percentComplete ($i / $allVMs.count * 100)
 		if ($foundVM = get-vm $thisVM.name)
 		{
-			$ParentFolder = make-ParentFolder -inFolderArray $thisVM.folderPath
+			$ParentFolder = make-ParentFolder -inFolderArray $thisVM.folderPath -folderType "VM"
 			$foundVM | move-vm -folder $ParentFolder	
 		}
 		$i++
