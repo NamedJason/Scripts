@@ -49,7 +49,7 @@ if ($folders)
 	foreach ($thisFolder in $folderArray)
 	{
 		write-progress -Activity "Creating Folders" -percentComplete ($i / $folderArray.count * 100)
-		make-ParentFolder -inFolderArray $thisFolder.path
+		make-ParentFolder -inFolderArray $thisFolder.path -folderType "VM"
 		$i++
 	}
 }
