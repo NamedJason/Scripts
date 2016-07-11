@@ -17,7 +17,8 @@ Param
 	[alias("f")]
 	[switch]$fixErrors,
 	[alias("v")]
-	[string]$vdSwitch = ""
+	[string]$vdSwitch = "",
+	$LoadBalancingPolicy = "LoadBalanceLoadBased"
 )
 
 #If a distributed vSwitch is specified, verify that it exists.
@@ -66,7 +67,7 @@ foreach ($thisPortGroup in $allPortGroups)
 				}
 			}
 			
-			if (!(($dvsPortGroup | get-VDUplinkTeamingPolicy).LoadBalancingPolicy -eq "LoadBalanceLoadBased") -and ($pscmdlet.ShouldProcess($thisPortGroup.name)))
+			if (!(($dvsPortGroup | get-VDUplinkTeamingPolicy).LoadBalancingPolicy -eq $LoadBalancingPolicy) -and ($pscmdlet.ShouldProcess($thisPortGroup.name)))
 			{
 				write-host "$($thisPortGroup.name) already exists, but the Load Balancing Policy is not 'Route based on Physical NIC Load'" -foreground "yellow"
 				if ($fixErrors -and ((read-host "Correct this misconfiguration [y|n]") -like "y*"))
