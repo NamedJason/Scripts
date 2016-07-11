@@ -75,7 +75,7 @@ if ($permissions)
 			"Folder" {$target = make-Parentfolder -inFolderArray $thisPermission.entity}
 			"VirtualMachine" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
 			"Datacenter" {
-				if ($thisPermission.entity -eq "Datacenters") {get-folder "Datacenters"}
+				if ($thisPermission.entity -eq "Datacenters") {$target = get-folder Datacenters}
 				else {$target = get-datacenter $thisPermission.entity}}
 			"ClusterComputeResource" {$target = get-cluster $thisPermission.entity}
 			Default {write-error "Unexpected permission target, $($thisPermission.type)"}
