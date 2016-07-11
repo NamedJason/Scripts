@@ -47,7 +47,7 @@ foreach ($thisPermission in $foundPermissions)
 {
 	write-progress -Activity "Getting permissions" -percentComplete ($i / $foundPermissions.count * 100)
 	$objPerm = "" | select entity,type,Role,Principal,Propagate,folderType
-	$objPerm.type = $thisPermission.entity.id.type
+	$objPerm.type = $thisPermission.entity.type
 	$objPerm.Role = $thisPermission.role
 	$objPerm.Principal = $thisPermission.Principal
 	$objPerm.Propagate = $thisPermission.propagate
