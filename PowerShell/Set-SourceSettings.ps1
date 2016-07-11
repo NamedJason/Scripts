@@ -78,7 +78,10 @@ if ($permissions)
 				if ($thisPermission.entity -eq "Datacenters") {$target = get-folder Datacenters}
 				else {$target = get-datacenter $thisPermission.entity}}
 			"ClusterComputeResource" {$target = get-cluster $thisPermission.entity}
-			Default {write-error "Unexpected permission target, $($thisPermission.type)"}
+			Default {
+			$thisPermission
+			write-error "Unexpected permission target, $($thisPermission.type)"
+			exit 22}
 		}
 		
 		if ($target)
