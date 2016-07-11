@@ -1,6 +1,4 @@
 #Get Data from Source vCenter
-#Built to be used with Set-SourceSettings.ps1 to recreate those same settings in another vCenter.
-#Does not support vApps or multiple datacenters in the same vCenter.
 param
 (
 	$directory = $(read-host "Enter local output directory"),
@@ -38,8 +36,6 @@ function get-folderpath
 $directory = $directory.trim("\") #" This comment is to fix the gistit syntax highlighting.
 new-item $directory -type directory -erroraction silentlycontinue
 
-if ((get-datacenter).count -gt 1){write-error "These scripts do not support multiple Datacenters in a single inventory"}
-
 #Get Roles
 get-virole | ? {$_.issystem -eq $false} | export-clixml $directory\$($datacenter)-roles.xml
 
@@ -51,7 +47,7 @@ foreach ($thisPermission in $foundPermissions)
 {
 	write-progress -Activity "Getting permissions" -percentComplete ($i / $foundPermissions.count * 100)
 	$objPerm = "" | select entity,type,Role,Principal,Propagate,folderType
-	$objPerm.type = $thisPermission.entity.id.split("-")[0]
+	$objPerm.type = $thisPermission.entity.id.type
 	$objPerm.Role = $thisPermission.role
 	$objPerm.Principal = $thisPermission.Principal
 	$objPerm.Propagate = $thisPermission.propagate
@@ -93,7 +89,8 @@ if ($getTemplates){get-datacenter $datacenter | get-template | set-template -ToV
 #Get VM Locations
 $outVMs = @()
 $allVApps = get-datacenter $datacenter | get-vapp
-$vAppVMs = $allVApps | get-vm
+$vAppVMs = @()
+$vAppVMs += $allVApps | get-vm
 if ($vAppVMs)
 {
 	$allVMs = Get-VM | ? {!($vAppVMs.contains($_))}
