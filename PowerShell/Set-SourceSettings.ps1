@@ -69,11 +69,12 @@ if ($permissions)
 	{
 		write-progress -Activity "Creating Permissions" -percentComplete ($i / $allPermissions.count * 100)
 		$target = ""
-		$thisPermission.type
+		$thisPermission.type.tostring()
 		switch ($thisPermission.type.tostring())
 		{
 			"Folder" {$target = make-Parentfolder -inFolderArray $thisPermission.entity}
 			"VirtualMachine" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
+			"VM" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
 			"Datacenter" {
 				if ($thisPermission.entity -eq "Datacenters") {$target = get-folder Datacenters}
 				else {$target = get-datacenter $thisPermission.entity}}
