@@ -72,7 +72,7 @@ foreach ($thisPortGroup in $allPortGroups)
 				write-host "$($thisPortGroup.name) already exists, but the Load Balancing Policy is not 'Route based on Physical NIC Load'" -foreground "yellow"
 				if ($fixErrors -and ((read-host "Correct this misconfiguration [y|n]") -like "y*"))
 				{
-					$dvsPortGroup | get-VDUplinkTeamingPolicy | Set-VDUplinkTeamingPolicy -LoadBalancingPolicy LoadBalanceLoadBased | select @{expression={$_.VDPortgroup}; label='Name'},LoadBalancingPolicy | fl
+					$dvsPortGroup | get-VDUplinkTeamingPolicy | Set-VDUplinkTeamingPolicy -LoadBalancingPolicy $LoadBalancingPolicy | select @{expression={$_.VDPortgroup}; label='Name'},LoadBalancingPolicy | fl
 				}
 			}
 			
@@ -93,7 +93,7 @@ foreach ($thisPortGroup in $allPortGroups)
 			{
 				$dvsPortGroup = $thisSwitch | new-vdportgroup -name $thisPortGroup.name
 				$dvsPortGroup | Set-VDPortgroup -PortBinding $thisPortGroup.PortBinding | select Name,PortBinding  | fl
-				$dvsPortGroup | Get-VDUplinkTeamingPolicy | Set-VDUplinkTeamingPolicy -LoadBalancingPolicy LoadBalanceLoadBased | select @{expression={$_.VDPortgroup}; label='Name'},LoadBalancingPolicy | fl
+				$dvsPortGroup | Get-VDUplinkTeamingPolicy | Set-VDUplinkTeamingPolicy -LoadBalancingPolicy $LoadBalancingPolicy | select @{expression={$_.VDPortgroup}; label='Name'},LoadBalancingPolicy | fl
 				if ($thisPortGroup.VLAN -ne 0) {$dvsPortGroup | Set-VDVlanConfiguration -vlanid $thisPortGroup.VLAN | select Name,@{ expression={$_.vlanconfiguration.vlanid}; label='VLAN'} | fl}
 			}
 		}
