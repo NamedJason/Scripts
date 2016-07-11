@@ -12,9 +12,19 @@ function make-ParentFolder
 {
 	Param
 	(
-		$inFolderArray
+		$inFolderArray,
+		$folderType
 	)
-	$parentFolder = get-datacenter $datacenter | get-folder "VM"
+	switch ($folderType)
+	{
+		"HostAndCluster"{$folderString = "Host"}
+		"VM"{$folderString = "VM"}
+		"Datastore"{$folderString = "Datastore"}
+		"Network"{$folderString = "Network"}
+		"Datacenter"{$folderString = "Datacenter"}
+		default {write-error "Unknown folder type: $folderType";exit 23}
+	}
+	$parentFolder = get-datacenter $datacenter | get-folder $folderString
 	foreach ($thisSubFolder in $inFolderArray)
 	{
 		if (!($parentFolder | get-folder $thisSubFolder -noRecursion -erroraction silentlycontinue))
@@ -69,15 +79,16 @@ if ($permissions)
 	{
 		write-progress -Activity "Creating Permissions" -percentComplete ($i / $allPermissions.count * 100)
 		$target = ""
-		$thisPermission.type.tostring()
-		switch ($thisPermission.type.tostring())
+		$thisPermission.type
+		switch ($thisPermission.type)
 		{
-			"Folder" {$target = make-Parentfolder -inFolderArray $thisPermission.entity}
+			"Folder" {
+				if ($thisPermission.entity -eq "Datacenters") {$target = get-folder Datacenters}
+				else {$target = make-Parentfolder -inFolderArray $thisPermission.entity -folderType $thisPermission.folderType}
+				}
 			"VirtualMachine" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
 			"VM" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
-			"Datacenter" {
-				if ($thisPermission.entity -eq "Datacenters") {$target = get-folder Datacenters}
-				else {$target = get-datacenter $thisPermission.entity}}
+			"Datacenter" {$target = get-datacenter $thisPermission.entity}
 			"ClusterComputeResource" {$target = get-cluster $thisPermission.entity}
 			Default {write-error "Unexpected permission target, $($thisPermission.type)"}
 		}
