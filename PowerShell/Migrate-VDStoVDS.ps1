@@ -18,9 +18,10 @@ $newIntSwitch = get-vdswitch -name $intName
 $newExtSwitch = get-vdswitch -name $extName
 
 #Build the Hashtable.  It looks for the first item and moves VMs onto the second item.  To change from temp to prod, just switch the order of the objects in the hash table
-$if ($toReal -and $toTemp){write-error "May only migrate -toReal or -toTemp, not both";exit 10}
+if ($toReal -and $toTemp){write-error "May only migrate -toReal or -toTemp, not both";exit 10}
 $pgHash = @{}
 $allPGs = import-csv $translationFile
+if(!(($allPGs | gm).name -contains "tempPG" -and ($allPGs | gm).name -contains "realPG")){write-error "translationFile missing tempPG or realPG column(s)";exit 12}
 foreach ($thisPG in $allPGs)
 {
 	if ($toTemp){$pgHash.add($thisPG.RealPG, $thisPG.TempPG)}
