@@ -30,7 +30,7 @@ if ($vdswitch)
 	}
 }
 
-$allPortGroups = import-csv $configFile | where {($_.DVS -match $vdswitch) -or ($_.DVS -match "^$($vdswitch.split('-')[1])")}
+if (!($allPortGroups = import-csv $configFile | where {($_.DVS -match $vdswitch) -or ($_.DVS -match "^$($vdswitch.split('-')[1])")})){write-error "No definitions for $vdswitch";exit 21}
 # $allPortGroups = import-csv $configFile | where {($_.DVS -eq "Sac-Intranet") -or ($_.DVS -eq "Intranet")}
 
 #Verify that the input file contains all of the necessary columns.
