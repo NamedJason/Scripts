@@ -1,6 +1,6 @@
 param
 (
-	$directory = $(read-host "Enter local input directory"),
+	$directory = $(read-host "Enter local output directory"),
 	$datacenter = $(read-host "Enter datacenter"),
 	[switch]$roles,
 	[switch]$permissions,
@@ -69,24 +69,16 @@ if ($permissions)
 	{
 		write-progress -Activity "Creating Permissions" -percentComplete ($i / $allPermissions.count * 100)
 		$target = ""
-		if ($thisPermission.type -eq "Folder")
+		$thisPermission.type
+		switch ($thisPermission.type)
 		{
-			#permission is assigned to a folder, use make-folder to get the precise folder
-			$target = make-Parentfolder -inFolderArray $thisPermission.entity
-		}
-		elseif ($thisPermission.type -eq "VirtualMachine")
-		{
-			#permission is assigned to VM
-			$target = get-datacenter $datacenter | get-vm $thisPermission.entity
-		}
-		elseif ($thisPermission.type -eq "Datacenter")
-		{
-			#permission is assigned to Datacenter
-			$target = get-datacenter $thisPermission.entity
-		}
-		else
-		{
-			write-error "Unexpected permission target, $($thisPermission.type)"
+			"Folder" {$target = make-Parentfolder -inFolderArray $thisPermission.entity}
+			"VirtualMachine" {$target = get-datacenter $datacenter | get-vm $thisPermission.entity}
+			"Datacenter" {
+				if ($thisPermission.entity -eq "Datacenters") {get-folder "Datacenters"}
+				else {$target = get-datacenter $thisPermission.entity}}
+			"ClusterComputeResource" {$target = get-cluster $thisPermission.entity}
+			Default {write-error "Unexpected permission target, $($thisPermission.type)"}
 		}
 		
 		if ($target)
@@ -114,7 +106,7 @@ if ($VMs)
 		if ($foundVM = get-vm $thisVM.name)
 		{
 			$ParentFolder = make-ParentFolder -inFolderArray $thisVM.folderPath
-			$foundVM | move-vm -destination $ParentFolder	
+			$foundVM | move-vm -folder $ParentFolder	
 		}
 		$i++
 	}
