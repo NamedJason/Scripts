@@ -3,7 +3,7 @@ function import-ValidCSV
 {
 	param
 	(
-		[parameter()]
+		[parameter(Mandatory=$true)]
 		[ValidateScript({test-path $_ -type leaf})]
 		[string]$inputFile,
 		[string[]]$requiredColumns
