@@ -10,7 +10,9 @@ param
 	[parameter(Mandatory=$true)]
 	[string]$Cluster,
 	[parameter(parameterSetName='remediate',Mandatory=$true)]
-	[string]$GroupName
+	[string]$GroupName,
+	[parameter(parameterSetName='remediate']
+	[string]$VMName
 )
 
 $clusterObj = get-cluster $cluster
@@ -34,6 +36,7 @@ if ($report)
 #Adds ungrouped VMs to the specfied group
 if ($placeVMs)
 {
+	$ungroupedVMs = $ungroupedVMs | ? {$_ -match $VMName}
 	if ($destinationGroup = $clusterObj | get-DrsVMGroup -name $groupName)
 	{
 		foreach ($thisVM in $ungroupedVMs)
