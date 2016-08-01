@@ -1,5 +1,5 @@
 #Detects and reports on any VMs that aren't part of any groups, then adds them to the specified Group
-#Must have the DRSRule module from PowerCLIGoodies (available on GitHub)
+#Must have the DRSRule module from PowerCLIGoodies (available at https://github.com/PowerCLIGoodies/DRSRule)
 #Requires -modules DRSRule
 param
 (
