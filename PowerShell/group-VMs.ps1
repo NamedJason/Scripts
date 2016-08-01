@@ -1,5 +1,23 @@
-#Detects and reports on any VMs that aren't part of any groups, then adds them to the specified Group
-#Must have the DRSRule module from PowerCLIGoodies (available at https://github.com/PowerCLIGoodies/DRSRule)
+<#
+.SYNOPSIS
+This script detects VMs that belong to no DRS Rule VM Group and places them into the specified group.  It requires the DRSRule module.
+
+.Example 
+./group-vm.ps1 -report -cluster <host cluster name>
+Discovers all VMs in the specified cluster that are not in any DRS Rule VM Group
+
+.Example
+./group-vm.ps1 -placeVMs -cluster <host cluster name> -groupName <DRS Group name>
+Discovers all VMs in the specified cluster that are not members of any DRS Rule VM Group and places them into the specified DRS Rule Group
+
+.Example
+./group-vm.ps1 -placeVMs -cluster <host cluster name> -groupName <DRS Group name> -VMName <VM Name>
+Discovers all VMs in the specified cluster that are not members of any DRS Rule VM Group and match the specified RegEx, then places them into the specified DRS Rule Group
+
+.Description
+Written by Jason Coleman (virtuallyjason.blogspot.com).  Requires the DRSRule module from https://github.com/PowerCLIGoodies/DRSRule
+#>
+
 #Requires -modules DRSRule
 param
 (
@@ -11,7 +29,7 @@ param
 	[string]$Cluster,
 	[parameter(parameterSetName='remediate',Mandatory=$true)]
 	[string]$GroupName,
-	[parameter(parameterSetName='remediate']
+	[parameter(parameterSetName='remediate')]
 	[string]$VMName
 )
 
