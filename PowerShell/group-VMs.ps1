@@ -33,7 +33,7 @@ param
 	[string]$VMName
 )
 
-$clusterObj = get-cluster $cluster
+if (!($clusterObj = get-cluster $cluster)){exit 10}
 $groupedVMs = @()
 
 #Get a list of all VMs that are not part of any DRS VM Group
