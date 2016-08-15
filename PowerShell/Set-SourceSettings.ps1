@@ -136,19 +136,17 @@ if ($VMs)
 if ($DRS)
 {
 	#Import the data from the Get script
-	$DRSVMGroups = import-clixml $directory\$($datacenter)-DRSVMGroups.xml
-	$DRSVMHostGroups = import-clixml $directory\$($datacenter)-DRSVMHostGroups.xml
-	$DRSVMtoVMHostRules = import-clixml $directory\$($datacenter)-DRSVMtoVMHostRules.xml
-	$DRSVMtoVMRules = import-clixml $directory\$($datacenter)-DRSVMtoVMRules.xml
+	[array]$DRSVMGroups = import-clixml $directory\$($datacenter)-DRSVMGroups.xml
+	[array]$DRSVMHostGroups = import-clixml $directory\$($datacenter)-DRSVMHostGroups.xml
+	[array]$DRSVMtoVMHostRules = import-clixml $directory\$($datacenter)-DRSVMtoVMHostRules.xml
+	[array]$DRSVMtoVMRules = import-clixml $directory\$($datacenter)-DRSVMtoVMRules.xml
 	
 	#Create the VM Groups
-	write-host ""
-	write-host "$('-'*24)"
-	write-host "Working on DRS VM Groups"
-	write-host "$('-'*24)"
+	$i = 0
 	foreach ($thisGroup in $DRSVMGroups)
 	{
-		write-host "Working on VM Group: $($thisGroup.name)"
+		$i++
+		write-progress -Activity "Making VM Group: $($thisGroup.name)" -percentComplete ($i / $DRSVMGroups.count * 100)
 		if ($thisCluster = get-cluster $thisGroup.cluster)
 		{
 			$vmArray = @()
@@ -182,13 +180,11 @@ if ($DRS)
 	}
 	
 	#Create VMHost Groups
-	write-host ""
-	write-host "$('-'*28)"
-	write-host "Working on DRS VMHost Groups"
-	write-host "$('-'*28)"
+	$i = 0
 	foreach ($thisGroup in $DRSVMHostGroups)
 	{
-		write-host "Working on VMHost Group: $($thisGroup.name)"
+		$i++
+		write-progress -Activity "Making VMHost Group: $($thisGroup.name)" -percentComplete ($i / $DRSVMHostGroups.count * 100)
 		if ($thisCluster = get-cluster $thisGroup.cluster)
 		{
 			$vmHostArray = @()
@@ -221,15 +217,14 @@ if ($DRS)
 	}
 
 	#Create VM to VMHost Rules
-	write-host ""
-	write-host "$('-'*33)"
-	write-host "Working on DRS VM to VMHost Rules"
-	write-host "$('-'*33)"
+	$i = 0
 	foreach ($thisRule in $DRSVMtoVMHostRules)
 	{
-		write-host "Working on VM to VMHost Rule: $($thisRule.name)"
+		$i++
+		write-progress -Activity "Making VM to VMHost rule: $($thisRule.name)" -percentComplete ($i / $DRSVMtoVMHostRules.count * 100)
 		if ($thisCluster = get-cluster $thisRule.cluster)
 		{
+			#Overwrite an existing rule or create a new one, as per the current specifications
 			#Prepare the hash table with all required arguments
 			$arguments = @("AffineHostGroupName","VMGroupName","Name","AntiAffineHostGroupName")
 			$h = @{}
@@ -251,16 +246,13 @@ if ($DRS)
 	}
 	
 	#Create VM to VM Rules
-	write-host ""
-	write-host "$('-'*29)"
-	write-host "Working on DRS VM to VM Rules"
-	write-host "$('-'*29)"
+	$i = 0
 	foreach ($thisRule in $DRSVMtoVMRules)
 	{
-		write-host "Working on VM to VM Rule: $($thisRule.name)"
+		$i++
+		write-progress -Activity "Making VM to VM rule: $($thisRule.name)" -percentComplete ($i / $DRSVMtoVMRules.count * 100)
 		if ($thisCluster = get-cluster $thisRule.cluster)
 		{
-			#Overwrite an existing rule or create a new one, as per the current specifications
 			#Prepare the hash table to capture if the rule is Mandatory, Affinity, and/or Enabled
 			$arguments = @("Mandatory","KeepTogether","Enabled")
 			$h = @{}
