@@ -13,12 +13,15 @@ Param
 (
 	[validateScript({test-path $_ -pathType leaf})]
 	[alias("c")]
-	[string]$configFile = "E:\Temp\DVS.csv",
+	[parameter(Mandatory=$true)]
+	[string]$configFile,
 	[alias("f")]
 	[switch]$fixErrors,
 	[alias("v")]
-	[string]$vdSwitch = "",
-	$LoadBalancingPolicy = "LoadBalanceLoadBased"
+	[parameter(Mandatory=$true)]
+	[string]$vdSwitch,
+	[ValidateSet("LoadBalanceLoadBased","LoadBalanceIP","LoadBalanceSrcMac","LoadBalanceSrcID","ExplicitFailover")]
+	[string]$LoadBalancingPolicy = "LoadBalanceLoadBased"
 )
 
 #If a distributed vSwitch is specified, verify that it exists.
