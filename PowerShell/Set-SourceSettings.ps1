@@ -230,11 +230,11 @@ if ($DRS)
 		write-host "Working on VM to VMHost Rule: $($thisRule.name)"
 		if ($thisCluster = get-cluster $thisRule.cluster)
 		{
-			#Prepare the hash table with all required arguements
-			$arguements = @("AffineHostGroupName","VMGroupName","Name","AntiAffineHostGroupName")
+			#Prepare the hash table with all required arguments
+			$arguments = @("AffineHostGroupName","VMGroupName","Name","AntiAffineHostGroupName")
 			$h = @{}
 			$thisRule.psobject.properties | foreach {
-				if (($_.value) -and ($arguements -contains $_.name)) {$h.add("$($_.name)","$($_.value)")}
+				if (($_.value) -and ($arguments -contains $_.name)) {$h.add("$($_.name)","$($_.value)")}
 				if (($_.value -eq "true") -and (@("Mandatory","Enabled") -contains $_.name)) {$h.add("$($_.name)",$true)}
 			}
 			#Remove an existing rule, then create the new rule as per the Hash Table
@@ -262,10 +262,10 @@ if ($DRS)
 		{
 			#Overwrite an existing rule or create a new one, as per the current specifications
 			#Prepare the hash table to capture if the rule is Mandatory, Affinity, and/or Enabled
-			$arguements = @("Mandatory","KeepTogether","Enabled")
+			$arguments = @("Mandatory","KeepTogether","Enabled")
 			$h = @{}
 			$thisRule.psobject.properties | foreach {
-				if (($_.value -eq "True") -and ($arguements -contains $_.name)){$h.add("$($_.name)",$true)}
+				if (($_.value -eq "True") -and ($arguments -contains $_.name)){$h.add("$($_.name)",$true)}
 			}
 			#Prepare the list of VMs for the Rule
 			$vmArray = @()
