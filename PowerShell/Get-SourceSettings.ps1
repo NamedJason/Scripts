@@ -1,4 +1,5 @@
 #Get Data from Source vCenter
+#Requires -modules DRSRule
 param
 (
 	$directory = $(read-host "Enter local output directory"),
@@ -130,3 +131,9 @@ foreach ($thisVM in $allVMs)
 	$i++
 }
 $outVMs | export-clixml $directory\$($datacenter)-VMs.xml
+
+#Get DRS Rules
+get-drsvmgroup | export-clixml $directory\$($datacenter)-DRSVMGroups.xml
+get-drsvmhostgroup | export-clixml $directory\$($datacenter)-DRSVMHostGroups.xml
+get-DrsVMToVMHostRule | export-clixml $directory\$($datacenter)-DRSVMtoVMHostRules.xml
+Get-DrsVMToVMRule | export-clixml $directory\$($datacenter)-DRSVMtoVMRules.xml
