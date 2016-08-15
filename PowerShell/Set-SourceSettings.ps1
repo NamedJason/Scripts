@@ -230,7 +230,6 @@ if ($DRS)
 		write-host "Working on VM to VMHost Rule: $($thisRule.name)"
 		if ($thisCluster = get-cluster $thisRule.cluster)
 		{
-			#Overwrite an existing rule or create a new one, as per the current specifications
 			#Prepare the hash table with all required arguements
 			$arguements = @("AffineHostGroupName","VMGroupName","Name","AntiAffineHostGroupName")
 			$h = @{}
