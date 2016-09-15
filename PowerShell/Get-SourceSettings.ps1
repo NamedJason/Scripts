@@ -137,3 +137,18 @@ get-drsvmgroup | export-clixml $directory\$($datacenter)-DRSVMGroups.xml
 get-drsvmhostgroup | export-clixml $directory\$($datacenter)-DRSVMHostGroups.xml
 get-DrsVMToVMHostRule | export-clixml $directory\$($datacenter)-DRSVMtoVMHostRules.xml
 Get-DrsVMToVMRule | export-clixml $directory\$($datacenter)-DRSVMtoVMRules.xml
+
+#Get Cluster EVC Mode
+$allClusters = @()
+$i = 1
+$clusters = get-cluster
+$clusters | foreach {
+	write-progress -Activity "Getting Cluster Details" -percentComplete ($i / $clusters.count * 100)
+	$outObj = "" | select ClusterName,VMHosts,EVCMode
+	$outObj.VMHosts = ($_ | get-vmhost).name
+	$outObj.ClusterName = $_.name
+	$outObj.EVCMode = $_.evcmode
+	$allClusters += $outObj
+	$i++
+}
+$allClusters | export-clixml $directory\$($datacenter)-Cluster-Description.xml
