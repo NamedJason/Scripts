@@ -1,4 +1,5 @@
 #Get Data from Source vCenter
+#Get the DRSRule Module from https://github.com/PowerCLIGoodies/DRSRule
 #Requires -modules DRSRule
 param
 (
