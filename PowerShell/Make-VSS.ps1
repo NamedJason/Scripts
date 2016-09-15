@@ -11,14 +11,14 @@ param
 	[alias("d")]
 	[string]$destination = $(read-host -Prompt "Enter the Destination Virtual Switch name"),
 	[alias("o")]
-	[string]$outputFile = "C:\Temp\PGTranslations.xml"
+	[string]$outputFile = "E:\Temp\PGTranslations.xml"
 )
 #Create an empty array to store the port group translations
 $pgTranslations = @()
 #Get the destination vSwitch
-$destSwitch = Get-VirtualSwitch -host $thisHost -name $destination
+if (!($destSwitch = Get-VirtualSwitch -host $thisHost -name $destination)){write-error "$destination vSwitch not found on $thisHost";exit 10}
 #Get a list of all port groups on the source distributed vSwitch
-$allPGs = get-vdswitch -name $source | get-vdportgroup
+if (!($allPGs = get-vdswitch -name $source | get-vdportgroup)){write-error "No port groups found for $source Distributed vSwitch";exit 11}
 foreach ($thisPG in $allPGs)
 {
 	$thisObj = new-object -Type PSObject
