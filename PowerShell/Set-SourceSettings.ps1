@@ -1,7 +1,7 @@
 #Requires -modules DRSRule
 param
 (
-	$directory = $(read-host "Enter local output directory"),
+	$directory = $(read-host "Enter local input directory"),
 	$datacenter = $(read-host "Enter datacenter"),
 	[switch]$roles,
 	[switch]$permissions,
@@ -224,7 +224,6 @@ if ($DRS)
 		write-progress -Activity "Making VM to VMHost rule: $($thisRule.name)" -percentComplete ($i / $DRSVMtoVMHostRules.count * 100)
 		if ($thisCluster = get-cluster $thisRule.cluster)
 		{
-			#Overwrite an existing rule or create a new one, as per the current specifications
 			#Prepare the hash table with all required arguments
 			$arguments = @("AffineHostGroupName","VMGroupName","Name","AntiAffineHostGroupName")
 			$h = @{}
@@ -283,6 +282,24 @@ if ($DRS)
 		{
 			write-error "Unable to find the $($thisRule.cluster) cluster."
 		}
+	}
+}
+
+#Check Cluster Configuration
+$allClusters = import-clixml $directory\$($datacenter)-Cluster-Description.xml
+foreach ($thisCluster in $allClusters)
+{
+	if ($newCluster = get-cluster $thisCluster.ClusterName)
+	{
+		if ($newCluster.evcmode -ne $thisCluster.evcmode) {Write-host -foreground red "$($newCluster.name) does not use $($thisCluster.evcmode) EVC Mode."}
+		if (($theseHosts = $newCluster | get-vmhost).count -gt 0)
+		{
+			if ($outComp = compare-object ($theseHosts).name $thisCluster.vmhosts) {Write-host -foreground yellow "Cluster ""$($newCluster.name)"" does not have all of the expected ESXi hosts.";$outComp}	
+		}
+	}
+	else
+	{
+		write-host -foreground red "Cluster $($thisCluster.clustername) does not exist."
 	}
 }
 
