@@ -1,7 +1,6 @@
 #Checks a group of hosts for potential zoning or san presentation inconsistencies
 $outReport = @()
 foreach ($thisCluster in (get-cluster))
-# foreach ($thisCluster in (get-folder unconfigured))
 {
 	$scsiLunCount = 0
 	foreach ($thisHost in ($thisCluster | get-vmhost))
