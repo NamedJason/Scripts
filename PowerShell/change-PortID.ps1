@@ -44,7 +44,7 @@ foreach ($thisVM in $affectedVMs){
 			write-host "Migrating $($thisVM.name) from $($origPortGroup.name) to $($tempPortGroup.name)..."
 			pause
 			$thisNIC | set-networkadapter -confirm:$false -portgroup $tempPortGroup
-			start-sleep 1
+			start-sleep 2
 			write-host "Migrating $($thisVM.name) from $($tempPortGroup.name) to $($origPortGroup.name)..."
 			$thisNIC | set-networkadapter -confirm:$false -portgroup $origPortGroup
 		}
