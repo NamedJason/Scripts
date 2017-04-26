@@ -8,8 +8,8 @@ param
 	$vdswitch
 )
 write-host "Getting ESXi hosts and Distributed Switch $vdswitch..."
-$allHosts = get-vmhost
 $vdswitch = get-vdswitch $vdswitch
+$allHosts = $vdswitch | get-vmhost
 $portGroups = $vdswitch | get-vdportgroup
 $out = @()
 #Get the valid list of VLANs
