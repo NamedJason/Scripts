@@ -14,7 +14,7 @@ if ($plinkAliases = plink $user@$switch -pw $password 'alishow'){
 	for ($I=0;$I -lt $plinkAliases.count;$i++){
 		if ($plinkAliases[$i].trim() -match "^alias"){
 			$alias = $plinkAliases[$i]
-			while ($plinkAliases[$i+1].trim() -match "^\d{2}:\d{2}:"){
+			while ($plinkAliases[$i+1].trim() -match "^[\da-f]{2}:[\da-f]{2}:"){
 				$alias = $alias + " " + $plinkAliases[$i+1]
 				$i++
 			}
