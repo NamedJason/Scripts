@@ -7,6 +7,7 @@
 	This command will read the input file at E:\Temp\DVS.csv for all entries pertaining to the specified Distribtued vSwitch and will add any new Port Groups and will reconfigure any existing Port Groups that have had configuration drift.
 	.NOTES
 	Config file needs these columns: Name, VLAN, PortBinding, DVS
+	PortBinding accepts: Static, Dynamic, Ephemeral (don't use Dynamic)
 #>
 [cmdletbinding(SupportsShouldProcess=$True)]
 Param
