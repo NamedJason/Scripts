@@ -28,6 +28,7 @@ foreach ($thisVsys in $vsysOfInterest){
 		$propHashtable.add("Application",($rule.application.member -join ", "))
 		$propHashtable.add("Service",($rule.service.member -join ", "))
 		$propHashtable.add("Action",($rule.action -join ", "))
+		$propHashtable.add("Disabled",$rule.disabled)
 		$propHashtable.add("RuleNumber",$i++)
 		$outObj = new-object psobject -property $propHashtable
 		$output += $outObj
