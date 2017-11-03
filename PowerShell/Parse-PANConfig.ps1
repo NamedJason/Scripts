@@ -1,8 +1,12 @@
+#Parse Palo Alto firewall config export XML into an array of PowerShell objects.
+#Use: Parse-PANConfig.ps1 -vsys <String> -panConfigXML <xml>
+# -vsys is the name of the vsys to be analyzed, leave it blank to analyze the whole firewall
+# -panConfigXML is an XML object that contains the PAN configuration.  Use '[xml](get-content panConfig.xml)' to get the necessary PS Object.
 param(
 	$vsys = "",
 	$panConfigXML
 )
-
+if ($panConfigXML.getType().name -ne "XmlDocument"){throw "panConfigXML requires an XML Object.  Use '[xml](get-content config.xml' to get an appropriate object."}
 $output = @()
 $vsysOfInterest = (($panConfigXML | select-xml -xpath "//*[contains(@name,""$vsys"")]").node | ? {$_.'pre-rulebase' -or $_.'post-rulebase' -or $_.rulebase})
 foreach ($thisVsys in $vsysOfInterest){
