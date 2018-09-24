@@ -13,7 +13,7 @@ function get-VMNetUseSummary {
 	#Gets the highest average network usage for all VMs in the environment
 	foreach ($vm in $allVMs){
 		write-progress -id 1 -activity "Getting VM Network Usage" -status "Checking $($vm.name)..." -percentComplete ($i++ / $allVMs.count * 100)
-		$networkUsage += (get-stat -Entity $vm -stat "net.usage.average" -realtime).value | sort -Descending | select -first 1
+		$networkUsage += (get-stat -Entity $vm -stat "net.usage.average" -realtime -instance vmnic*).value | sort -Descending | select -first 1
 	}
 	#Creates a summary with Sum, Average, Maximum and Date for the network usage of the whole environment
 	$summary = $networkUsage | Measure-Object -sum -average -maximum -minimum
