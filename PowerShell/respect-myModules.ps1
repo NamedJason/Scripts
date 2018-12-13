@@ -1,3 +1,4 @@
+#Adds the commands from the specified modules to NPP's powerShell language definition.
 param(
 	$langsPath = $ENV:APPDATA + "\Notepad++\langs.xml",
 	$modules = @("vmware.PowerCLI","powerVRNI","powerNSX")
