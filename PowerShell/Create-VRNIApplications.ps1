@@ -8,7 +8,7 @@
 param (
 	$folder
 )
-$vcDrive = new-psdrive -location (get-folder VM) -name vcInventory -PSProvider VimInventory -root '\'
+$vcDrive = new-psdrive -location (get-folder VM) -name vcInventory -PSProvider VimInventory -root '\' #' fix syntax highlighting
 $allVMs = ls vcInventory:\ -recurse | ? {!$_.psiscontainer}
 $rootPath = "" + $vcDrive.provider  + "::" + $vcDrive.Root + "\"
 
