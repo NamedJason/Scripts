@@ -122,7 +122,7 @@ if ($VMs)
 		if ($foundVM = get-vm $thisVM.name -erroraction silentlycontinue)
 		{
 			$ParentFolder = make-ParentFolder -inFolderArray $thisVM.folderPath -folderType "VM"
-			$foundVM | move-vm -location $ParentFolder	
+			$foundVM | move-vm -destination $foundVM.VMHost -Inventorylocation $ParentFolder
 		}
 		$i++
 	}
